@@ -1,32 +1,306 @@
 ---
-title: "MATH-517: Assignment x"
-author: "Your name"
-date: 'date of submission'
+title: "MATH-517: Assignment 3"
+author: "GERMI Rémi"
+date: '05/10/2025'
 format: pdf
 editor: visual
 ---
 
 ## Theoretical exercise
 
-Your answer goes here
+## Question 1
+
+Let $$
+K_i = K\!\left(\frac{X_i - x}{h}\right), \qquad u_i = X_i - x,
+$$ we can write the problem as a weighted least squares problem.
+
+The minimization problem is: $$
+(\hat\beta_0(x), \hat\beta_1(x))
+= \arg\min_{\beta_0,\beta_1\in\mathbb{R}}
+\sum_{i=1}^n \left(Y_i - \beta_0 - \beta_1 u_i \right)^2 K_i.
+$$
+
+Let\
+$$
+\mathbf{X} = 
+\begin{pmatrix}1 & u_1\\ \vdots & \vdots \\ 1 & u_n\end{pmatrix}, \qquad
+\mathbf{W} = \mathrm{diag}(K_1,\dots,K_n), \qquad
+\mathbf{Y}=(Y_1,\dots,Y_n)^\top.
+$$
+
+Then the weighted least squares solution is $$
+\hat\beta(x)
+= (\mathbf{X}^\top \mathbf{W}\mathbf{X})^{-1}\mathbf{X}^\top \mathbf{W}\mathbf{Y}.
+$$
+
+The fitted value is $$
+\hat m(x) = \hat\beta_0(x)
+= \mathbf{e}_1^\top (\mathbf{X}^\top \mathbf{W}\mathbf{X})^{-1}\mathbf{X}^\top \mathbf{W}\mathbf{Y},
+$$ where $\mathbf{e}_1=(1,0)^\top$. Hence, $$
+\hat m(x) = \sum_{i=1}^n w_{n,i}(x) Y_i,
+$$ with weights $$
+w_{n,i}(x)
+= \mathbf{e}_1^\top (\mathbf{X}^\top \mathbf{W}\mathbf{X})^{-1}
+\begin{pmatrix}1 \\ u_i \end{pmatrix} K_i.
+$$
+
+------------------------------------------------------------------------
+
+## Question 2
+
+Let $$
+S_{n,k}(x)
+= \frac{1}{nh} \sum_{i=1}^n u_i^k K_i,
+\qquad k=0,1,2.
+$$
+
+We get $$
+\mathbf{X}^\top \mathbf{W}\mathbf{X}
+= nh
+\begin{pmatrix}
+S_{n,0}(x) & S_{n,1}(x)\\
+S_{n,1}(x) & S_{n,2}(x)
+\end{pmatrix}
+=: nh\, \mathbf{M}(x),
+$$ and its inverse is $$
+(\mathbf{X}^\top \mathbf{W}\mathbf{X})^{-1}
+= \frac{1}{nh} \frac{1}{S_{n,0}(x)S_{n,2}(x) - S_{n,1}(x)^2}
+\begin{pmatrix}
+S_{n,2}(x) & -S_{n,1}(x)\\
+-S_{n,1}(x) & S_{n,0}(x)
+\end{pmatrix}.
+$$
+
+Therefore, $$
+w_{n,i}(x)
+= \frac{1}{nh}
+\frac{S_{n,2}(x) - S_{n,1}(x)(X_i - x)}
+{S_{n,0}(x)S_{n,2}(x) - S_{n,1}(x)^2}
+K\!\left(\frac{X_i - x}{h}\right).
+$$
+
+------------------------------------------------------------------------
+
+## Question 3
+
+Noting that $$
+\mathbf{X}(1,0)^\top = \mathbf{1}_n = \begin{pmatrix}1\\ \vdots \\ 1 \end{pmatrix}
+\quad \text{and} \quad 
+\mathbf{X}^\top  \mathbf{W} = \sum_{i=1}^n \begin{pmatrix}1 \\ u_i \end{pmatrix} K_i,
+$$ we get \begin{align}
+\sum_{i=1}^n w_{n,i}(x)
+&=\sum_{i=1}^n \mathbf{e}_1^\top (\mathbf{X}^\top\mathbf{W}\mathbf{X})^{-1} \begin{pmatrix}1 \\ u_i \end{pmatrix} K_i \\
+&= \mathbf{e}_1^\top (\mathbf{X}^\top\mathbf{W}\mathbf{X})^{-1} \sum_{i=1}^n  \begin{pmatrix}1 \\ u_i \end{pmatrix} K_i \\
+&= \mathbf{e}_1^\top (\mathbf{X}^\top\mathbf{W}\mathbf{X})^{-1}
+\mathbf{X}^\top\mathbf{W}\mathbf{1} \\
+&= \mathbf{e}_1^\top (\mathbf{X}^\top\mathbf{W}\mathbf{X})^{-1}
+\mathbf{X}^\top\mathbf{W}\mathbf{X} (1,0)^\top \\
+&=\mathbf{e}_1^\top \mathbf{I}_2 (1,0)^\top
+= 1.
+\end{align}
+
+Thus, we obtain: $$
+\sum_{i=1}^n w_{n,i}(x) = 1.
+$$
 
 ## Practical exercise
 
-Unless stated otherwise, your answer to the practical part should include the following elements:
+-   **Aim of the study :**
 
- - Description of the aim of the simulation study.
- - Description of the different quantities that intervene in your simulation study. Explain how these quantities (fixed or random) are defined and the reasoning behind the choices you made.
- - Description of your findings using appropriate graphics and/or tables (with a caption!) that are well commented in the text. 
- 
-The code should not appear in the PDF report, unless there is a specific reason to include it.
- 
+    The purpose of the study is to estimate and observe the optimal bandwidth $\hat{h}_{AMISE}$ for a beta distribution and to observe its behavior as a function of the block size N, the sample size n, and the parameters of the beta distribution.
+
+-   **Behavior of h when N growth:**
+
+    From the $h$ vs $N$ plot (for Beta(2,2)): We observe that $\hat{h}_{AMISE}$ decreases as$N$ increases. We can explain this by the fact that increasing $N$ divides the sample into smaller blocks. The local polynomial fits then become more localized and can better capture curvature in $m(x)$.\
+    This leads to a larger estimated $\hat{\theta}_{22}$ (the integrated squared second derivative), and possibly to a smaller estimated residual variance $\hat{\sigma}^2$.
+
+    And from the definition of an increase in $\hat{\theta}_{22}$ typically implies a decrease in $\hat{h}$.\
+    Empirically, we observe exactly this behavior in the simulation.
+
+-   **Should** $N$ **depend on** $n$**? Why?**
+
+    Yes, the block size $N$ (number of blocks) should be chosen in relation to the sample size $n$. In fact, if $N$ is too large relative to $n$, blocks contain very few points, making degree-4 polynomial fits unreliable.\
+    Variance of the estimates increases and the denominator $(n - 5N)$ in the computation of $\hat{\sigma}^2$ can even become small or negative. If $N$ is too small, the fits are overly global and may underestimate curvature, leading to a smaller $\hat{\theta}_{22}$ and therefore an overly large $\hat{h}$. Hence we use the $C_p$-like rule for try to get the best $N$.
+
+    $N$ should scale with $n$ — larger data-sets allow more blocks, but each block must remain large enough for stable estimation.
+
+-   **What happens when we change the parameter of the Beta law?**
+
+    When the number of observations varies a lot between different regions in the support of X e.g between Beta(5,1) or Beta(1,5) most observations concentrate near one end of the support, leaving few in the tails.
+
+    As a result: Blocks in sparse regions have few points → unstable polynomial fits.\
+    Estimates of $\hat{\theta}_{22}$ and $\hat{\sigma}^2$ become noisier and $\hat{h}$ values fluctuate more, reflecting the heterogeneity in data density.The $h$ vs Beta plot illustrates this.\
+    For instance, the U-shaped Beta(2, 2) distribution produced larger $\hat{h}$ values,\
+    since most observations lie near the boundaries and curvature estimates are less stable.
+
+-   **4. Effect of sample size** $n$
+
+    From the $h$ vs $n$ plot (using $C_p$-selected $N$):
+
+    $\hat{h}_{AMISE}$ decreases as $n$ increases, consistent with the theoretical scaling:
+
+    $$
+    h_{AMISE} \propto n^{-1/5}.
+    $$
+
+    However, the exact slope and smoothness depend on the Beta shape and the selected $N$.\
+    When $N$ is optimally reselected for each $n$ (as done via the $C_p$ rule),\
+    the dependence of $\hat{h}$ on $n$ becomes smooth and closely follows the expected theoretical trend.
+
+------------------------------------------------------------------------
 
 ```{r}
 #| echo: false
 #| message: false
 #| warning: false
 
-# Your code goes here. 
+# Simulation study for plug-in h_AMISE using blockwise degree-4 OLS fits
+
+
+
+set.seed(12345)
+
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+
+# Regression function
+m_fun <- function(x) {
+  sin((x/3 + 0.1)^(-1))
+}
+
+
+# Estimate h_AMISE for a single simulated dataset
+estimate_h <- function(n, N, alpha, beta, sigma2 = 1.0) {
+  # we simulate the random variable
+  X <- rbeta(n, alpha, beta)
+  Y <- m_fun(X) + rnorm(n, mean = 0, sd = sqrt(sigma2))
+  
+  # we separate in N blocks
+  block_idx <- rep(1:N, each = ceiling(n/N))[1:n]
+  
+  # --- Fit polynomial regression of degree 4 ---
+  fitted_vals <- numeric(n)
+  second_deriv <- numeric(n)
+  for (j in seq_len(N)) {
+    idx <- which(block_idx == j)
+    Xj <- X[idx]; Yj <- Y[idx]
+    fit <- lm(Yj ~ Xj + I(Xj^2) + I( Xj^3) + I( Xj^4))
+    fitted_vals[idx] <- fitted.values(fit)
+    #second derivative
+    coefs <- coef(fit)
+    second_deriv[idx] <- 2*coefs[2] + 6*coefs[3]*Xj + 12*coefs[4]*(Xj^2)
+  }
+  
+  
+  # theta22_hat
+  theta22_hat <- mean(second_deriv^2)
+  # sigma^2_hat: denominator n - 5N (fallback to n-1 if nonpositive)
+  denom <- n - 5 * N
+  if (denom <= 0) denom <- n - 1
+  sigma2_hat <- sum((Y - fitted_vals)^2, na.rm = TRUE) / denom
+  # RSS(N)
+  RSS_hat <- denom*sigma2_hat
+  
+  # h_AMISE estimation :
+  supp_len <- 1.0 # Beta on [0,1]
+  if (theta22_hat <= 1e-12) { # if theta is too small, h_hat is not defined
+    h_hat <- NA_real_
+  } else {
+    h_hat <- n^(-1/5) * ((35 * sigma2_hat * supp_len / theta22_hat)^(1/5))
+  }
+  list(h = h_hat, theta22 = theta22_hat, sigma2 = sigma2_hat, RSS = RSS_hat )
+}
+
+# Grid and simulation settings (you can adjust)
+ns <- c(200,500, 1000, 2000, 5000)
+betas_params <- list(c(2,2), c(0.5,0.5),c(1,3), c(3,1), c(5,1), c(1,5), c(5,5))
+
+
+# Storage
+results <- list()
+selected_N <- data.frame()
+# Main simulation loop
+for (bb in betas_params) {
+  alpha <- bb[1]; beta <- bb[2]
+  for (n in ns) {
+    Nmax <- max(min(floor(n / 20), 5), 1)
+    N_best <-Nmax
+    rss_Nmax <-estimate_h(n, Nmax, alpha, beta, sigma2 = 1.0)$RSS
+    Cp_min <- rss_Nmax / (rss_Nmax / (n - 5 * Nmax)) - (n - 10 * Nmax)
+    
+    for (Nblocks in seq(Nmax)) {
+      est <- estimate_h(n, Nblocks, alpha, beta, sigma2 = 1.0)
+      
+     # choose N_best who minimize Cp
+      Cp_N <- est$RSS / (rss_Nmax / (n - 5 * Nmax)) - (n - 10 * Nblocks)
+      if(Cp_N < Cp_min ){
+        N_best <-Nblocks
+        Cp_min <- Cp_N
+      }
+      
+      results[[length(results) + 1]] <- data.frame(
+        alpha = alpha, beta = beta, n = n, N = Nblocks,
+        h = est$h, theta = est$theta22, sigma = est$sigma2
+      )
+     
+    }
+    selected_N <- bind_rows(selected_N, data.frame(alpha = alpha, beta = beta, n = n, N_sel = N_best))
+  }
+}
+
+
+df_res <- bind_rows(results)
+
+df_res2 <- left_join(df_res, selected_N, by = c("alpha", "beta", "n"))
+
+
+
+# Plot 1: h_mean vs N for Beta(2,2)
+
+
+chosen <- df_res %>% filter(alpha == 2, beta == 2)
+p1 <- ggplot(chosen, aes(x = factor(N), y = h, group = factor(n), color = factor(n))) +
+  geom_line(aes(group = factor(n)), lwd = 1) + geom_point(size = 2) +
+  labs(x = "Number of blocks N", y = "Estimated h_AMISE",
+       title = "h_AMISE vs N (Beta(2,2))", color = "n") +
+  theme_minimal()
+ggsave("plot_h_vs_Nblock.png", p1, width = 8, height = 6, dpi = 150)
+plot(p1)
+
+
+# Plot 2: h_mean vs n (using selected N by Cp)
+p2data <- df_res2 %>% group_by(alpha, beta, n) %>%
+  filter(N == N_sel) %>% ungroup()
+p2 <- ggplot(p2data, aes(x = n, y = h, color = factor(paste0("Beta(", alpha, ",", beta, ")")))) +
+  geom_line(aes(group = interaction(alpha, beta)), size = 1) + geom_point(size = 2) +
+  scale_x_log10() +
+  labs(x = "Sample size n (log scale)", y = "Estimated h_AMISE (mean)",
+       title = "h_AMISE vs n (N selected by Cp-like rule)", color = "Beta dist") +
+  theme_minimal()
+ggsave("plot_h_vs_n.png", p2, width = 8, height = 6, dpi = 150)
+plot(p2)
+
+
+# Plot 3: effect of Beta shape on h (n fixed = 1000)
+n_fix <- 1000
+p3data <- df_res2 %>% filter(n == n_fix) %>%
+  group_by(alpha, beta) %>% filter(N == N_sel) %>% ungroup()
+p3 <- ggplot(p3data,aes(x = factor(sprintf("(%.1f, %.1f), N=%d", alpha, beta, N)), y = h)) +
+  geom_col(fill = "steelblue") + labs(x = "Beta shape (and selected N)", y = "Estimated h_AMISE",
+                                      title = sprintf("Effect of Beta shape on h_AMISE (n=%d)", n_fix)) +
+  theme_minimal() + theme(axis.text.x = element_text(angle = 20, hjust = 1))
+ggsave("plot_h_vs_beta.png", p3, width = 9, height = 5, dpi = 150)
+plot(p3)
+
+# Print brief summary
+print("Simulation finished. Files produced:")
+print(list.files(pattern = "plot_h_.*png"))
+print("Saved tables: simulation_results_summary.csv, selected_N_by_Cp.csv")
+
 # The `echo: false` option disables the printing of code (only output is displayed).
 # The programming language can be changed to Python or Julia
 
